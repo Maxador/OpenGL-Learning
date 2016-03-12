@@ -39,6 +39,7 @@ func main() {
 	}
 
 	var vertices = []float32{
+		// First triangle
 		-0.5, -0.5, 0.0,
 		0.5, -0.5, 0.0,
 		0.0, 0.5, 0.0,
@@ -58,21 +59,10 @@ func main() {
 	gl.EnableVertexAttribArray(0)
 	gl.BindVertexArray(0)
 
-	vertexShader, err := compileShader(vertexShaderSource, gl.VERTEX_SHADER)
+	program, err := createProgram(vertexShaderSource, fragmentShaderSource)
 	if err != nil {
 		panic(err)
 	}
-	fragmentShader, err := compileShader(fragmentShaderSource, gl.FRAGMENT_SHADER)
-	if err != nil {
-		panic(err)
-	}
-
-	program := gl.CreateProgram()
-	gl.AttachShader(program, vertexShader)
-	gl.AttachShader(program, fragmentShader)
-	gl.LinkProgram(program)
-	gl.DeleteShader(vertexShader)
-	gl.DeleteShader(fragmentShader)
 
 	for !window.ShouldClose() {
 		gl.ClearColor(0.2, 0.3, 0.3, 1.0)
@@ -106,6 +96,36 @@ func compileShader(source string, shaderType uint32) (uint32, error) {
 		return 0, fmt.Errorf("Failed to compile %v : %v", source, log)
 	}
 	return shader, nil
+}
+
+func createProgram(vertexShaderSource, fragmentShaderSource string) (uint32, error) {
+	vertexShader, err := compileShader(vertexShaderSource, gl.VERTEX_SHADER)
+	if err != nil {
+		panic(err)
+	}
+
+	fragmentShader, err := compileShader(fragmentShaderSource, gl.FRAGMENT_SHADER)
+	if err != nil {
+		panic(err)
+	}
+
+	program := gl.CreateProgram()
+	gl.AttachShader(program, vertexShader)
+	gl.AttachShader(program, fragmentShader)
+	gl.LinkProgram(program)
+
+	var status int32
+	gl.GetProgramiv(program, gl.LINK_STATUS, &status)
+	if status == gl.FALSE {
+		var logLength int32
+		gl.GetProgramiv(program, gl.INFO_LOG_LENGTH, &logLength)
+		log := strings.Repeat("\x00", int(logLength+1))
+		gl.GetProgramInfoLog(program, logLength, nil, gl.Str(log))
+		return 0, fmt.Errorf("Failed to link the program: %v", log)
+	}
+	gl.DeleteShader(vertexShader)
+	gl.DeleteShader(fragmentShader)
+	return program, nil
 }
 
 var vertexShaderSource = `
