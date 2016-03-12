@@ -38,11 +38,23 @@ func main() {
 		panic(err)
 	}
 
+	// var vertices = []float32{
+	// 	0.5, 0.5, 0.0, // Top right
+	// 	0.5, -0.5, 0.0, // Bottom right
+	// 	-0.5, -0.5, 0.0, // Bottom left
+	// 	-0.5, 0.5, 0.0, // Top left
+	// }
+
 	var vertices = []float32{
-		0.5, 0.5, 0.0, // Top right
-		0.5, -0.5, 0.0, // Bottom right
-		-0.5, -0.5, 0.0, // Bottom left
-		-0.5, 0.5, 0.0, // Top left
+		// First triangle
+		0.0, -0.5, 0.0,
+		0.45, 0.5, 0.0,
+		0.9, -0.5, 0.0,
+
+		// Second triangle
+		0.0, -0.5, 0.0,
+		-0.9, -0.5, 0.0,
+		-0.45, 0.5, 0.0,
 	}
 
 	var indices = []uint32{
@@ -79,8 +91,8 @@ func main() {
 
 		gl.UseProgram(program)
 		gl.BindVertexArray(vao)
-		// gl.DrawArrays(gl.TRIANGLES, 0, 6)
-		gl.DrawElements(gl.TRIANGLES, 6, gl.UNSIGNED_INT, gl.PtrOffset(0))
+		gl.DrawArrays(gl.TRIANGLES, 0, 6)
+		// gl.DrawElements(gl.TRIANGLES, 6, gl.UNSIGNED_INT, gl.PtrOffset(0))
 		gl.BindVertexArray(0)
 
 		window.SwapBuffers()
