@@ -45,35 +45,60 @@ func main() {
 	// 	-0.5, 0.5, 0.0, // Top left
 	// }
 
-	var vertices = []float32{
-		// First triangle
-		0.0, -0.5, 0.0,
-		0.45, 0.5, 0.0,
-		0.9, -0.5, 0.0,
+	// var vertices = []float32{
+	// 	// First triangle
+	// 	0.0, -0.5, 0.0,
+	// 	0.45, 0.5, 0.0,
+	// 	0.9, -0.5, 0.0,
+	//
+	// 	// Second triangle
+	// 	0.0, -0.5, 0.0,
+	// 	-0.9, -0.5, 0.0,
+	// 	-0.45, 0.5, 0.0,
+	// }
 
-		// Second triangle
+	var verticesLeft = []float32{
 		0.0, -0.5, 0.0,
 		-0.9, -0.5, 0.0,
 		-0.45, 0.5, 0.0,
 	}
-
-	var indices = []uint32{
-		0, 1, 3, // First triangle
-		1, 2, 3, // Second triangle
+	var verticesRight = []float32{
+		0.0, -0.5, 0.0,
+		0.45, 0.5, 0.0,
+		0.9, -0.5, 0.0,
 	}
 
-	var vao, vbo, ebo uint32
-	gl.GenVertexArrays(1, &vao)
-	gl.GenBuffers(1, &vbo)
-	gl.GenBuffers(1, &ebo)
+	// var indices = []uint32{
+	// 	0, 1, 3, // First triangle
+	// 	1, 2, 3, // Second triangle
+	// }
 
-	gl.BindVertexArray(vao)
+	// var vao, vbo, ebo uint32
+	var vao, vbo [2]uint32
+	gl.GenVertexArrays(1, &vao[0])
+	gl.GenVertexArrays(1, &vao[1])
+	gl.GenBuffers(1, &vbo[0])
+	gl.GenBuffers(1, &vbo[1])
+	// gl.GenBuffers(1, &ebo)
 
-	gl.BindBuffer(gl.ARRAY_BUFFER, vbo)
-	gl.BufferData(gl.ARRAY_BUFFER, len(vertices)*4, gl.Ptr(vertices), gl.STATIC_DRAW)
+	gl.BindVertexArray(vao[0])
 
-	gl.BindBuffer(gl.ELEMENT_ARRAY_BUFFER, ebo)
-	gl.BufferData(gl.ELEMENT_ARRAY_BUFFER, len(indices)*4, gl.Ptr(indices), gl.STATIC_DRAW)
+	gl.BindBuffer(gl.ARRAY_BUFFER, vbo[0])
+	gl.BufferData(gl.ARRAY_BUFFER, len(verticesRight)*4, gl.Ptr(verticesRight), gl.STATIC_DRAW)
+
+	// gl.BindBuffer(gl.ELEMENT_ARRAY_BUFFER, ebo)
+	// gl.BufferData(gl.ELEMENT_ARRAY_BUFFER, len(indices)*4, gl.Ptr(indices), gl.STATIC_DRAW)
+
+	gl.VertexAttribPointer(0, 3, gl.FLOAT, false, 3*4, gl.PtrOffset(0))
+	gl.EnableVertexAttribArray(0)
+
+	gl.BindVertexArray(0)
+
+	// Triangle 2
+
+	gl.BindVertexArray(vao[1])
+	gl.BindBuffer(gl.ARRAY_BUFFER, vbo[1])
+	gl.BufferData(gl.ARRAY_BUFFER, len(verticesLeft)*4, gl.Ptr(verticesLeft), gl.STATIC_DRAW)
 
 	gl.VertexAttribPointer(0, 3, gl.FLOAT, false, 3*4, gl.PtrOffset(0))
 	gl.EnableVertexAttribArray(0)
@@ -90,8 +115,10 @@ func main() {
 		gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
 
 		gl.UseProgram(program)
-		gl.BindVertexArray(vao)
-		gl.DrawArrays(gl.TRIANGLES, 0, 6)
+		gl.BindVertexArray(vao[0])
+		gl.DrawArrays(gl.TRIANGLES, 0, 3)
+		gl.BindVertexArray(vao[1])
+		gl.DrawArrays(gl.TRIANGLES, 0, 3)
 		// gl.DrawElements(gl.TRIANGLES, 6, gl.UNSIGNED_INT, gl.PtrOffset(0))
 		gl.BindVertexArray(0)
 
