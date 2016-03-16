@@ -105,7 +105,8 @@ func main() {
 
 	gl.BindVertexArray(0)
 
-	program, err := createProgram(vertexShaderSource, fragmentShaderSource)
+	program1, err := createProgram(vertexShaderSource, fragmentShaderSource)
+	program2, err := createProgram(vertexShaderSource, yellowFragmentShaderSource)
 	if err != nil {
 		panic(err)
 	}
@@ -114,9 +115,10 @@ func main() {
 		gl.ClearColor(0.2, 0.3, 0.3, 1.0)
 		gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
 
-		gl.UseProgram(program)
+		gl.UseProgram(program1)
 		gl.BindVertexArray(vao[0])
 		gl.DrawArrays(gl.TRIANGLES, 0, 3)
+		gl.UseProgram(program2)
 		gl.BindVertexArray(vao[1])
 		gl.DrawArrays(gl.TRIANGLES, 0, 3)
 		// gl.DrawElements(gl.TRIANGLES, 6, gl.UNSIGNED_INT, gl.PtrOffset(0))
@@ -194,4 +196,13 @@ out vec4 color;
 
 void main() {
 	color = vec4(1.0, 0.5, 0.2, 1.0);
+}` + "\x00"
+
+var yellowFragmentShaderSource = `
+#version 410 core
+
+out vec4 color;
+
+void main() {
+	color = vec4(1.0, 1.0, 0.0, 1.0);
 }` + "\x00"
